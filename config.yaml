@@ -1,0 +1,668 @@
+# ─── KisanMitra AI — Master Config ────────────────────────────────
+
+project:
+  name: "KisanMitra AI"
+  version: "1.0.0"
+  description: "Hindi-first agricultural advisory chatbot for Indian farmers"
+  language: "hi"
+
+# Target states for Hindi belt filtering
+target_states:
+  - "UTTAR PRADESH"
+  - "RAJASTHAN"
+  - "MADHYA PRADESH"
+  - "BIHAR"
+  - "HARYANA"
+  - "JHARKHAND"
+  - "JHARKAND"           # alternate spelling found in dataset
+  - "UTTARAKHAND"
+  - "CHHATTISGARH"
+  - "HIMACHAL PRADESH"   # included — dataset shows 40K records
+
+# ── Junk/Noise query patterns to DROP during cleaning ─────────────
+# These are call-centre artifacts, not real farmer queries
+noise_query_patterns:
+  - "not respond by farmer"
+  - "no response"
+  - "abandoned"
+  - "abandand"
+  - "for calling kisaan call center"
+  - "for calling kisan call center"
+  - "ob call"
+  - "blank query"
+  - "test call"
+  - "wrong number"
+  - "call disconnected"
+  - "farmer did not respond"
+  - "no query"
+
+# ── Intent Classes ─────────────────────────────────────────────────
+# 11 intents based on actual dataset distribution
+# post_harvest and organic_farming merged into crop_advisory (too rare <0.1%)
+# nutrient_management added as new intent (large chunk of unknowns)
+
+intents:
+
+  # 1 — Dominant intent ~47%
+  weather_sowing:
+    hindi:
+      - "मौसम"
+      - "बारिश"
+      - "तापमान"
+      - "हवा"
+      - "आर्द्रता"
+      - "पूर्वानुमान"
+      - "वर्षा"
+      - "मानसून"
+      - "सूखा"
+      - "बाढ़"
+      - "ओला"
+      - "पाला"
+      - "शीत लहर"
+      - "लू"
+      - "खरीफ"
+      - "रबी"
+      - "जायद"
+      - "बुवाई का समय"
+      - "मेघ"
+      - "धूप"
+      - "डिग्री सेंटीग्रेड"
+      - "किलोमीटर प्रति घंटा"
+    english:
+      - "weather"
+      - "rain"
+      - "rainfall"
+      - "temperature"
+      - "wind"
+      - "humidity"
+      - "forecast"
+      - "monsoon"
+      - "drought"
+      - "flood"
+      - "hail"
+      - "frost"
+      - "cold wave"
+      - "heat wave"
+      - "cloud"
+      - "sunny"
+      - "climate"
+      - "season"
+      - "kharif"
+      - "rabi"
+      - "zaid"
+      - "sowing time"
+      - "best time to sow"
+      - "pre kharif"
+
+  # 2 — Second largest ~20%
+  crop_advisory:
+    hindi:
+      - "बुवाई"
+      - "सिंचाई"
+      - "खाद"
+      - "उर्वरक"
+      - "कटाई"
+      - "फसल"
+      - "बीज"
+      - "रोपाई"
+      - "प्रत्यारोपण"
+      - "किस्म"
+      - "प्रजाति"
+      - "नर्सरी"
+      - "खरपतवार"
+      - "निराई"
+      - "गुड़ाई"
+      - "मल्चिंग"
+      - "परागण"
+      - "कलम"
+      - "छंटाई"
+      - "उत्पादन"
+      - "उपज"
+      - "पैदावार"
+      - "पौध"
+      - "भूमि तैयारी"
+      - "बिजाई"
+      - "बढ़ोत्तरी"
+      - "फुटाव"
+      - "भंडारण"
+      - "जैविक"
+      - "प्राकृतिक खेती"
+      - "जीवामृत"
+      - "नीम तेल"
+      - "मूल्य संवर्धन"
+      - "प्रसंस्करण"
+    english:
+      - "sowing"
+      - "irrigation"
+      - "fertilizer"
+      - "harvest"
+      - "crop"
+      - "seed"
+      - "cultivation"
+      - "planting"
+      - "spacing"
+      - "thinning"
+      - "pruning"
+      - "variety"
+      - "hybrid"
+      - "nursery"
+      - "transplant"
+      - "intercrop"
+      - "crop rotation"
+      - "land preparation"
+      - "seed rate"
+      - "germination"
+      - "yield"
+      - "production"
+      - "agronomy"
+      - "weed"
+      - "weeding"
+      - "herbicide"
+      - "mulching"
+      - "pollination"
+      - "grafting"
+      - "improve growth"
+      - "growth in"
+      - "farming"           # catches "asaliya farming", "isabgol farming"
+      - "storage"
+      - "post harvest"
+      - "organic"
+      - "natural farming"
+      - "zero budget"
+      - "neem"
+      - "ipm"
+      - "integrated pest management"
+
+  # 3 — NEW INTENT discovered from unknowns ~5-6% estimated
+  nutrient_management:
+    hindi:
+      - "पोषण"
+      - "पोषक तत्व"
+      - "सूक्ष्म पोषक"
+      - "नैनो यूरिया"
+      - "यूरिया"
+      - "डीएपी"
+      - "एनपीके"
+      - "नाइट्रोजन"
+      - "फास्फोरस"
+      - "पोटाश"
+      - "जस्ता"
+      - "बोरान"
+      - "सल्फर"
+      - "कैल्शियम"
+      - "मैग्नीशियम"
+      - "लोहे की कमी"
+      - "पीलापन"
+      - "पोषण प्रबंधन"
+      - "ग्राम प्रति लीटर"
+      - "ग्रेड"
+    english:
+      - "nutrient management"
+      - "nutrient"
+      - "npk"
+      - "nitrogen"
+      - "phosphorus"
+      - "potassium"
+      - "micronutrient"
+      - "zinc"
+      - "boron"
+      - "sulphur"
+      - "sulfur"
+      - "calcium"
+      - "magnesium"
+      - "iron deficiency"
+      - "urea"
+      - "dap"
+      - "fertilizer management"
+      - "basal dose"
+      - "top dressing"
+      - "nano urea"
+      - "19:19:19"
+      - "18:18:18"
+      - "0:0:50"
+      - "0:52:34"
+      - "ssp"
+      - "single super phosphate"
+      - "muriate of potash"
+      - "mop"
+
+  # 4 — ~6.8%
+  pest_id:
+    hindi:
+      - "कीट"
+      - "पतंग"
+      - "इल्ली"
+      - "सुंडी"
+      - "माहू"
+      - "थ्रिप्स"
+      - "दीमक"
+      - "टिड्डी"
+      - "सफेद मक्खी"
+      - "तना छेदक"
+      - "पत्ती मोड़क"
+      - "मिलीबग"
+      - "घुन"
+      - "सूत्रकृमि"
+      - "जैसिड"
+      - "चींटी"
+      - "लट"
+    english:
+      - "pest"
+      - "insect"
+      - "worm"
+      - "larvae"
+      - "aphid"
+      - "thrips"
+      - "army worm"
+      - "fall army"
+      - "caterpillar"
+      - "beetle"
+      - "mite"
+      - "whitefly"
+      - "jassid"
+      - "termite"
+      - "locust"
+      - "grasshopper"
+      - "stem borer"
+      - "shoot borer"
+      - "leaf folder"
+      - "mealybug"
+      - "weevil"
+      - "nematode"
+      - "ant"              # was missing — caught in unknowns
+      - "sucking pest"
+      - "bollworm"
+      - "pod borer"
+      - "fruit borer"
+
+  # 5 — ~6.5%
+  disease:
+    hindi:
+      - "रोग"
+      - "झुलसा"
+      - "ब्लाइट"
+      - "फंगस"
+      - "फफूंद"
+      - "वायरस"
+      - "बैक्टीरिया"
+      - "सड़न"
+      - "गलन"
+      - "धब्बा"
+      - "किट्ट"
+      - "उकठा"
+      - "मुरझाना"
+      - "चूर्णिल"
+      - "कंड"
+      - "आर्द्र गलन"
+      - "काला धब्बा"
+      - "पत्ती धब्बा"
+    english:
+      - "disease"
+      - "blight"
+      - "fungus"
+      - "rust"
+      - "wilt"
+      - "virus"
+      - "bacteria"
+      - "rot"
+      - "mildew"
+      - "smut"
+      - "scab"
+      - "canker"
+      - "mosaic"
+      - "yellowing"
+      - "leaf spot"
+      - "black spot"       # was missing — caught in unknowns
+      - "damping off"
+      - "blast"
+      - "powdery"
+      - "downy"
+      - "stem rot"
+      - "root rot"
+      - "alternaria"
+      - "cercospora"
+      - "fusarium"
+      - "phytophthora"
+      - "collar rot"
+      - "charcoal rot"
+
+  # 6 — ~4.3%
+  msp_price:
+    hindi:
+      - "समर्थन मूल्य"
+      - "एमएसपी"
+      - "कीमत"
+      - "दाम"
+      - "बाजार"
+      - "खरीद"
+      - "मंडी"
+      - "बिक्री"
+      - "सरकारी मूल्य"
+      - "बीमा"
+      - "मुआवजा"
+      - "फसल बीमा"
+      - "क्षतिपूर्ति"
+    english:
+      - "msp"
+      - "minimum support price"
+      - "price"
+      - "market rate"
+      - "rate"
+      - "procurement"
+      - "mandi"
+      - "market price"
+      - "selling price"
+      - "government price"
+      - "support price"
+      - "crop insurance"
+      - "pmfby"
+      - "insurance"
+      - "compensation"
+
+  # 7 — ~4.3%
+  horticulture:
+    hindi:
+      - "बागवानी"
+      - "फल"
+      - "सब्जी"
+      - "फूल"
+      - "बाग"
+      - "आम"
+      - "केला"
+      - "नींबू"
+      - "अमरूद"
+      - "पपीता"
+      - "अनार"
+      - "सेब"
+      - "अंगूर"
+      - "टमाटर"
+      - "आलू"
+      - "प्याज"
+      - "लहसुन"
+      - "मिर्च"
+      - "बैंगन"
+      - "फूलगोभी"
+      - "पत्तागोभी"
+      - "हल्दी"
+      - "अदरक"
+      - "मसाले"
+    english:
+      - "horticulture"
+      - "fruit"
+      - "vegetable"
+      - "flower"
+      - "orchard"
+      - "mango"
+      - "banana"
+      - "citrus"
+      - "guava"
+      - "papaya"
+      - "pomegranate"
+      - "apple"
+      - "grape"
+      - "tomato"
+      - "potato"
+      - "onion"
+      - "garlic"
+      - "capsicum"
+      - "brinjal"
+      - "cauliflower"
+      - "cabbage"
+      - "cucumber"
+      - "gourd"
+      - "spice"
+      - "turmeric"
+      - "ginger"
+      - "chilli"
+      - "floriculture"
+
+  # 8 — ~4.1%
+  government_scheme:
+    hindi:
+      - "योजना"
+      - "सरकारी योजना"
+      - "प्रधानमंत्री"
+      - "सब्सिडी"
+      - "अनुदान"
+      - "लाभार्थी"
+      - "आवेदन"
+      - "पंजीकरण"
+      - "पोर्टल"
+      - "ऑनलाइन"
+      - "सामान्य सेवा केंद्र"
+      - "कृषि विभाग"
+      - "नाबार्ड"
+      - "आत्मा"
+      - "केवीके"
+      - "हेल्पलाइन"
+      - "टोल फ्री"
+      - "संपर्क"
+      - "किसान मेला"
+      - "प्रदर्शनी"
+      - "किसान क्रेडिट कार्ड"
+      - "ऋण"
+      - "कर्ज"
+    english:
+      - "scheme"
+      - "government scheme"
+      - "yojana"
+      - "pradhan mantri"
+      - "pm kisan"
+      - "subsidy"
+      - "grant"
+      - "beneficiary"
+      - "apply"
+      - "application"
+      - "registration"
+      - "portal"
+      - "online apply"
+      - "common service centre"
+      - "csc"
+      - "agriculture department"
+      - "krishi vibhag"
+      - "nabard"
+      - "atma"
+      - "kvk"
+      - "kisan credit card"
+      - "kcc"
+      - "loan"
+      - "credit"
+      - "kisan mela"
+      - "exhibition"
+      - "helpline"
+      - "toll free"
+      - "contact number"
+
+  # 9 — ~1.5%
+  soil_water:
+    hindi:
+      - "मिट्टी"
+      - "भूमि"
+      - "मृदा"
+      - "पीएच"
+      - "जैविक खाद"
+      - "कंपोस्ट"
+      - "वर्मी कंपोस्ट"
+      - "हरी खाद"
+      - "लवणता"
+      - "क्षारीयता"
+      - "जलभराव"
+      - "जल निकास"
+      - "नमी"
+      - "भूजल"
+      - "बोरवेल"
+      - "कुआं"
+      - "नहर"
+      - "जल संरक्षण"
+    english:
+      - "soil"
+      - "soil health"
+      - "soil test"
+      - "ph"
+      - "organic matter"
+      - "compost"
+      - "vermicompost"
+      - "green manure"
+      - "salinity"
+      - "alkalinity"
+      - "waterlogging"
+      - "drainage"
+      - "soil moisture"
+      - "groundwater"
+      - "borewell"
+      - "canal"
+      - "water management"
+      - "water conservation"
+      - "rainwater harvesting"
+      - "soil erosion"
+      - "fertigation"
+
+  # 10 — ~0.5%
+  animal_husbandry:
+    hindi:
+      - "पशु"
+      - "गाय"
+      - "भैंस"
+      - "बकरी"
+      - "भेड़"
+      - "मुर्गी"
+      - "मछली"
+      - "मत्स्य"
+      - "डेयरी"
+      - "पशु चिकित्सा"
+      - "टीकाकरण"
+      - "पशुपालन"
+      - "चारा"
+      - "दूध"
+      - "पशु रोग"
+    english:
+      - "animal"
+      - "cattle"
+      - "cow"
+      - "buffalo"
+      - "goat"
+      - "sheep"
+      - "poultry"
+      - "fish"
+      - "fishery"
+      - "dairy"
+      - "veterinary"
+      - "vaccination"
+      - "livestock"
+      - "fodder"
+      - "milk"
+      - "breeding"
+
+  # 11 — ~0.4%
+  equipment_machinery:
+    hindi:
+      - "ट्रैक्टर"
+      - "मशीन"
+      - "उपकरण"
+      - "यंत्र"
+      - "थ्रेशर"
+      - "हार्वेस्टर"
+      - "कंबाइन"
+      - "स्प्रेयर"
+      - "पंप"
+      - "ड्रिप सिस्टम"
+      - "पावर टिलर"
+      - "रोटावेटर"
+      - "हल"
+      - "सीड ड्रिल"
+      - "कस्टम हायरिंग"
+      - "किराया"
+      - "सोलर पंप"
+    english:
+      - "tractor"
+      - "machine"
+      - "equipment"
+      - "implement"
+      - "thresher"
+      - "harvester"
+      - "combine"
+      - "sprayer"
+      - "pump"
+      - "drip system"
+      - "sprinkler"
+      - "power tiller"
+      - "rotavator"
+      - "plough"
+      - "seed drill"
+      - "reaper"
+      - "custom hiring"
+      - "farm machinery"
+      - "solar pump"
+      - "hire center"
+
+# ── Hindi Script Detection ─────────────────────────────────────────
+hindi_detection:
+  unicode_start: 0x0900
+  unicode_end: 0x097F
+  min_hindi_ratio: 0.4
+
+# ── Deduplication ──────────────────────────────────────────────────
+deduplication:
+  num_permutations: 128
+  jaccard_threshold: 0.7
+  shingle_size: 3
+
+# ── Answer length filter ───────────────────────────────────────────
+# From dataset stats: min answer = 20 chars, some are clearly too short
+answer_length:
+  min_chars: 30      # drop very short answers
+  max_chars: 2000    # drop abnormally long ones (max was 37761 — outliers)
+
+# ── Query length filter ────────────────────────────────────────────
+query_length:
+  min_chars: 5       # drop blank/empty queries (min was 0)
+  max_chars: 500     # drop outliers (max was 2983)
+
+# ── Model Config ───────────────────────────────────────────────────
+model:
+  base: "google/mt5-base"
+  max_input_length: 256
+  max_output_length: 128
+  lora:
+    r: 16
+    alpha: 32
+    dropout: 0.05
+    target_modules:
+      - "q"
+      - "k"
+      - "v"
+      - "o"
+      - "wi_0"
+      - "wi_1"
+      - "wo"
+
+# ── Training Config ────────────────────────────────────────────────
+training:
+  sample_size: 20000
+  epochs: 3
+  batch_size: 4
+  gradient_accumulation_steps: 8
+  learning_rate: 1.0e-4
+  warmup_ratio: 0.05
+  early_stopping_patience: 3
+  train_val_test_split:
+    train: 0.70
+    val: 0.15
+    test: 0.15
+
+# ── RAG Config ─────────────────────────────────────────────────────
+rag:
+  embedding_model: "intfloat/multilingual-e5-small"
+  embedding_dim: 384
+  kb_size: 50000
+  top_k: 3
+  bm25_weight: 2.0
+
+# ── Instruction Template ───────────────────────────────────────────
+instruction_template: |
+  निर्देश: आप एक कृषि विशेषज्ञ हैं। किसान की समस्या का उत्तर हिंदी में दें।
+  राज्य: {state}
+  फसल: {crop}
+  समस्या का प्रकार: {intent}
+  किसान का प्रश्न: {query}
+  उत्तर:
