@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "@tailwindcss/vite": "^4.2.2",
+    "@types/react-router-dom": "^5.3.3",
+    "axios": "^1.15.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.8.0",
+    "react-hot-toast": "^2.6.0",
+    "react-router-dom": "^7.14.1",
+    "tailwindcss": "^4.2.2"
+  }
+}
